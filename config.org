@@ -8,7 +8,7 @@
 * Installation
 ** Quick Installation
 =git clone https://github.com/daedreth/UncleDavesEmacs ~/.emacs.d=
-
+CHANGE HERE
 Keep in mind that you should remove your own ~/.emacs and your ~/.emacs.d
 prior to cloning this configuration. The next time you launch Emacs (and I recommend
 launching emacs in the tty for the first time) it's going to download a good amount
