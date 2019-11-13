@@ -38,8 +38,9 @@
   (org-babel-load-file (expand-file-name "~/.emacs.d/config.org")))
 
 ;;; Experimental email stuff.
-(when (file-readable-p "~/.email/email.org")
-  (org-babel-load-file (expand-file-name "~/.email/email.org")))
+;; TSC
+;;(when (file-readable-p "~/.email/email.org")
+;;  (org-babel-load-file (expand-file-name "~/.email/email.org")))
 
 ;;; Anything below is personal preference.
 ;;; I recommend changing these values with the "customize" menu
