@@ -274,89 +274,7 @@ Everything regarding the WM or DE-like functionality is bundled here, remove the
 The only time I actually had to use comments, this is for ease of removal if you happen to not like exwm.
 *** Installation
 #+BEGIN_SRC emacs-lisp
-  (use-package exwm
-    :ensure t
-    :config
-
-      ;; necessary to configure exwm manually
-      (require 'exwm-config)
-
-      ;; fringe size, most people prefer 1 
-      (fringe-mode 3)
-      
-      ;; emacs as a daemon, use "emacsclient <filename>" to seamlessly edit files from the terminal directly in the exwm instance
-      (server-start)
-
-      ;; this fixes issues with ido mode, if you use helm, get rid of it
-      (exwm-config-ido)
-
-      ;; a number between 1 and 9, exwm creates workspaces dynamically so I like starting out with 1
-      (setq exwm-workspace-number 1)
-
-      ;; this is a way to declare truly global/always working keybindings
-      ;; this is a nifty way to go back from char mode to line mode without using the mouse
-      (exwm-input-set-key (kbd "s-r") #'exwm-reset)
-      (exwm-input-set-key (kbd "s-k") #'exwm-workspace-delete)
-      (exwm-input-set-key (kbd "s-w") #'exwm-workspace-swap)
-
-      ;; the next loop will bind s-<number> to switch to the corresponding workspace
-      (dotimes (i 10)
-        (exwm-input-set-key (kbd (format "s-%d" i))
-                            `(lambda ()
-                               (interactive)
-                               (exwm-workspace-switch-create ,i))))
-
-      ;; the simplest launcher, I keep it in only if dmenu eventually stopped working or something
-      (exwm-input-set-key (kbd "s-&")
-                          (lambda (command)
-                            (interactive (list (read-shell-command "$ ")))
-                            (start-process-shell-command command nil command)))
-
-      ;; an easy way to make keybindings work *only* in line mode
-      (push ?\C-q exwm-input-prefix-keys)
-      (define-key exwm-mode-map [?\C-q] #'exwm-input-send-next-key)
-
-      ;; simulation keys are keys that exwm will send to the exwm buffer upon inputting a key combination
-      (exwm-input-set-simulation-keys
-       '(
-         ;; movement
-         ([?\C-b] . left)
-         ([?\M-b] . C-left)
-         ([?\C-f] . right)
-         ([?\M-f] . C-right)
-         ([?\C-p] . up)
-         ([?\C-n] . down)
-         ([?\C-a] . home)
-         ([?\C-e] . end)
-         ([?\M-v] . prior)
-         ([?\C-v] . next)
-         ([?\C-d] . delete)
-         ([?\C-k] . (S-end delete))
-         ;; cut/paste
-         ([?\C-w] . ?\C-x)
-         ([?\M-w] . ?\C-c)
-         ([?\C-y] . ?\C-v)
-         ;; search
-         ([?\C-s] . ?\C-f)))
-
-      ;; this little bit will make sure that XF86 keys work in exwm buffers as well
-      (dolist (k '(XF86AudioLowerVolume
-                 XF86AudioRaiseVolume
-                 XF86PowerOff
-                 XF86AudioMute
-                 XF86AudioPlay
-                 XF86AudioStop
-                 XF86AudioPrev
-                 XF86AudioNext
-                 XF86ScreenSaver
-                 XF68Back
-                 XF86Forward
-                 Scroll_Lock
-                 print))
-      (cl-pushnew k exwm-input-prefix-keys))
-      
-      ;; this just enables exwm, it started automatically once everything is ready
-      (exwm-enable))
+ ;; TSC - remove exwm stuff
 #+END_SRC
 
 ** Launchers
@@ -378,34 +296,13 @@ with its own cache for most launched applications.
 I guess this goes without saying but you absolutely have to change the arguments
 to suit the software that you are using. What good is a launcher for discord if you don't use it at all.
 #+BEGIN_SRC emacs-lisp
-  (defun exwm-async-run (name)
-    (interactive)
-    (start-process name nil name))
-
-  (defun daedreth/launch-discord ()
-    (interactive)
-    (exwm-async-run "discord"))
-
-  (defun daedreth/launch-browser ()
-    (interactive)
-    (exwm-async-run "qutebrowser"))
-
-  (defun daedreth/lock-screen ()
-    (interactive)
-    (exwm-async-run "slock"))
-
-  (defun daedreth/shutdown ()
-    (interactive)
-    (start-process "halt" nil "sudo" "halt"))
+  ;; TSC - remove launcher stuff
 #+END_SRC
 
 *** Keybindings to start processes
 These can be modified as well, suit yourself.
 #+BEGIN_SRC emacs-lisp
-  (global-set-key (kbd "s-d") 'daedreth/launch-discord)
-  (global-set-key (kbd "<s-tab>") 'daedreth/launch-browser)
-  (global-set-key (kbd "<XF86ScreenSaver>") 'daedreth/lock-screen)
-  (global-set-key (kbd "<XF86PowerOff>") 'daedreth/shutdown)
+  ;; TSC - remove key bindings to start stuff
 #+END_SRC
 
 ** Audio controls
@@ -414,30 +311,18 @@ This is a set of bindings to my XF86 keys that invokes pulsemixer with the corre
 *** Volume modifier
 It goes without saying that you are free to modify the modifier as you see fit, 4 is good enough for me though.
 #+BEGIN_SRC emacs-lisp
-(defconst volumeModifier "4")
+;; TSC - (defconst volumeModifier "4")
 #+END_SRC
 
 *** Functions to start processes
 #+BEGIN_SRC emacs-lisp
-  (defun audio/mute ()
-    (interactive)
-    (start-process "audio-mute" nil "pulsemixer" "--toggle-mute"))
-
-  (defun audio/raise-volume ()
-    (interactive)
-    (start-process "raise-volume" nil "pulsemixer" "--change-volume" (concat "+" volumeModifier)))
-
-  (defun audio/lower-volume ()
-    (interactive)
-    (start-process "lower-volume" nil "pulsemixer" "--change-volume" (concat "-" volumeModifier)))
+  ;; TSC remove audio stuff
 #+END_SRC
 
 *** Keybindings to start processes
 You can also change those if you'd like, but I highly recommend keeping 'em the same, chances are, they will just work.
 #+BEGIN_SRC emacs-lisp
-(global-set-key (kbd "<XF86AudioMute>") 'audio/mute)
-(global-set-key (kbd "<XF86AudioRaiseVolume>") 'audio/raise-volume)
-(global-set-key (kbd "<XF86AudioLowerVolume>") 'audio/lower-volume)
+;; TSC - remove audio stuff
 #+END_SRC
 
 ** Screenshots
@@ -446,40 +331,18 @@ These won't work in the terminal version or the virtual console, obvious reasons
 
 *** Screenshotting the entire screen
 #+BEGIN_SRC emacs-lisp
-  (defun daedreth/take-screenshot ()
-    "Takes a fullscreen screenshot of the current workspace"
-    (interactive)
-    (when window-system
-    (loop for i downfrom 3 to 1 do
-          (progn
-            (message (concat (number-to-string i) "..."))
-            (sit-for 1)))
-    (message "Cheese!")
-    (sit-for 1)
-    (start-process "screenshot" nil "import" "-window" "root" 
-               (concat (getenv "HOME") "/" (subseq (number-to-string (float-time)) 0 10) ".png"))
-    (message "Screenshot taken!")))
-  (global-set-key (kbd "<print>") 'daedreth/take-screenshot)
+  ;; TSC - remove screenshot stuff
 #+END_SRC
 
 *** Screenshotting a region
 #+BEGIN_SRC emacs-lisp
-  (defun daedreth/take-screenshot-region ()
-    "Takes a screenshot of a region selected by the user."
-    (interactive)
-    (when window-system
-    (call-process "import" nil nil nil ".newScreen.png")
-    (call-process "convert" nil nil nil ".newScreen.png" "-shave" "1x1"
-                  (concat (getenv "HOME") "/" (subseq (number-to-string (float-time)) 0 10) ".png"))
-    (call-process "rm" nil nil nil ".newScreen.png")))
-  (global-set-key (kbd "<Scroll_Lock>") 'daedreth/take-screenshot-region)
+ ;; TSC - remove screenshot stuff
 #+END_SRC
 
 ** Default browser
 I use qutebrowser, so that's what I'll set up.
 #+BEGIN_SRC emacs-lisp
-  (setq browse-url-browser-function 'browse-url-generic
-        browse-url-generic-program "qutebrowser")
+  ;; TSC - remove browser
 #+END_SRC
 
 * Projectile
