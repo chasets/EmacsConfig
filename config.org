@@ -183,7 +183,7 @@ The theme is great, really, but some of the concepts just suck with powerline.
                                            :underline t :height 0.9))))
      
      ;; erc stuff
-     `(erc-nick-default-face ((,class :foreground ,blue :background ,background :weight bold)))
+     ; TSC `(erc-nick-default-face ((,class :foreground ,blue :background ,background :weight bold)))
 
      ;; org stuff
      `(outline-1 ((,class (:foreground ,blue :weight bold :height 1.8 :bold nil))))
@@ -1041,60 +1041,6 @@ Each category also has additional settings.
       (add-hook 'shell-mode-hook 'shell-mode-company-init))
 #+END_SRC
 
-*** lua/löve
-I must regrettably admit that =company= sucks with Lua/LÖVE.
-Which is also why I have =AC= now.
-I needed to do some shenanigans to get great auto-completion but here goes.
-#+BEGIN_SRC emacs-lisp
-  (add-hook 'lua-mode-hook 'yas-minor-mode)
-  (add-hook 'lua-mode-hook 'flycheck-mode)
-
-  ;;; this will download the necessary modules from git
-  (let (value)
-    (dolist (element '("love" "lua") value)
-      (unless (file-directory-p (concatenate 'string (getenv "HOME") "/.emacs.d/auto-complete-" element))
-        (shell-command (format "git clone %s %s" (concatenate 'string
-                                                              "https://github.com/rolpereira/auto-complete-" element ".el")
-                               (concatenate 'string (getenv "HOME") "/.emacs.d/auto-complete-" element) nil)))
-      (add-to-list 'load-path (expand-file-name (concatenate 'string "~/.emacs.d/auto-complete-" element)))))
-
-  (require 'auto-complete-love)
-  (require 'auto-complete-lua)
-
-  ;;; repl!
-  (add-hook 'lua-mode-hook '(lambda ()
-                              (local-set-key (kbd "C-c C-s") 'lua-show-process-buffer)
-                              (local-set-key (kbd "C-c C-h") 'lua-hide-process-buffer)))
-
-  ;;; ac > company
-  (use-package auto-complete
-    :ensure t
-    :config
-    (setq ac-use-menu-map t)
-    (setq ac-ignore-case nil)
-    (define-key ac-menu-map "\C-n" 'ac-next)
-    (define-key ac-menu-map "\C-p" 'ac-previous))
-
-  ;;; this will be changed, it's good enough for now
-  (add-hook 'lua-mode-hook '(lambda ()
-                              (setq ac-sources '(ac-source-love
-                                                 ac-source-lua
-                                                 ac-source-abbrev
-                                                 ac-source-words-in-same-mode-buffers))
-                              (auto-complete-mode)))
-
-  (add-hook 'lua-mode-hook 'auto-complete-mode)
-
-  ;;; I don't even know all the functionality
-  (use-package love-minor-mode
-    :ensure t
-    :config
-    (add-hook 'lua-mode-hook 'love-minor-mode))
-
-  ;;; behold, perfection :°)
-  (global-set-key (kbd "<f9>") '(lambda () (interactive) (start-process "love-play-game" nil "love" default-directory)))
-#+END_SRC
-
 * Git integration
 Countless are the times where I opened ansi-term to use =git= on something.
 These times are also something that I'd prefer stay in the past, since =magit= is
@@ -1219,65 +1165,4 @@ Edit this list as you see fit!
     (diminish 'yas-minor-mode)
     (diminish 'flycheck-mode)
     (diminish 'helm-mode))
-#+END_SRC
-
-* Instant messaging
-I like IRC, I also like other protocols but I enjoy IRC most, it's obvious that I long
-for a way to do my messaging from within emacs.
-There is plenty of IRC clients in the repositories, and some more in the emacs repositories
-but I find that the default =erc= does the job best, it's easy to use and offers some conveniences
-that more sophisticated ones don't, so I use it.
-
-** erc, also known as "a way to ask for help on #emacs"
-You might want to edit the default nick, it's password protected anyway so don't bother.
-
-*** Some common settings
-This also hides some of the channel messages to avoid cluttering the buffer.
-The other line changes the prompt for each channel buffer to match the channel name,
-this way you always know who you are typing to.
-#+BEGIN_SRC emacs-lisp
-  (setq erc-nick "daedreth")
-  (setq erc-prompt (lambda () (concat "[" (buffer-name) "]")))
-  (setq erc-hide-list '("JOIN" "PART" "QUIT"))
-#+END_SRC
-
-*** Poor mans selectable server list
-What it says on the tin, this changes the =erc= history to include the server I connect to often.
-#+BEGIN_SRC emacs-lisp
-  (setq erc-server-history-list '("irc.freenode.net"
-                                  "localhost"))
-#+END_SRC
-
-*** Nick highlighting
-You can even highlight nicks to make the buffers a bit more visually pleasing and easier to look at.
-#+BEGIN_SRC emacs-lisp
-(use-package erc-hl-nicks
-  :ensure t
-  :config
-    (erc-update-modules))
-#+END_SRC
-
-** rich presence for discord
-Memes, but it's fun and tiny.
-#+BEGIN_SRC emacs-lisp
-  (use-package elcord
-    :ensure t)
-#+END_SRC
-
-* Media
-Why bother with an external media manager when emacs is a thing.
-EMMS is huge, incredibly powerful and luckily well documented.
-All I need it for is to play music and video, that's it.
-I also need it to display metadata on the modeline correctly, which it does with mpd automatically.
-
-** EMMS with mpd
-There is many backends, many players and codecs for EMMS, we use mpd now.
-
-*** Basic setup for mpd
-The non XF86 keys are made to be somewhat logical to follow and easy to remember.
-At the bottom part of the configuration, you will notice how XF86 keys are used
-by default, so unless you keyboard is broken it should work out of the box.
-Obviously you might have to adjust /server-name/ and /server-port/ to fit your configuration.
-#+BEGIN_SRC emacs-lisp
- ;; TSC remove EMMS stuff
 #+END_SRC
