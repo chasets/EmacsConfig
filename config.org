@@ -1,3 +1,4 @@
+ a
 #+STARTUP: overview
 #+TITLE: Uncle Dave's Emacs
 #+CREATOR: Dawid 'daedreth' Eckert
@@ -1165,4 +1166,12 @@ Edit this list as you see fit!
     (diminish 'yas-minor-mode)
     (diminish 'flycheck-mode)
     (diminish 'helm-mode))
+#+END_SRC
+* Tim specific
+#+BEGIN_SRC emacs-lisp
+(menu-bar-mode  1)
+(add-hook 'text-mode-hook #'visual-line-mode)
+;; vi-like line insertion
+(global-set-key (kbd "C-S-o") (lambda () (interactive)(beginning-of-line)(open-line 1)))
+(global-set-key (kbd "C-o") (lambda () (interactive)(end-of-line)(newline)))
 #+END_SRC
