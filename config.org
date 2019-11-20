@@ -1,4 +1,3 @@
- a
 #+STARTUP: overview
 #+TITLE: Uncle Dave's Emacs
 #+CREATOR: Dawid 'daedreth' Eckert
@@ -1180,6 +1179,8 @@ Edit this list as you see fit!
 (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
 (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
 (setq scroll-step 1) ;; keyboard scroll one line at a time
-#+END_SRC
 (setq mac-command-modifier 'meta)
  (setq mac-option-modifier 'super)
+ (desktop-save-mode 1)
+#+END_SRC
+
