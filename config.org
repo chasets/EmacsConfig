@@ -1170,8 +1170,14 @@ Edit this list as you see fit!
 * Tim specific
 #+BEGIN_SRC emacs-lisp
 (menu-bar-mode  1)
+(scroll-bar-mode 1)
 (add-hook 'text-mode-hook #'visual-line-mode)
 ;; vi-like line insertion
 (global-set-key (kbd "C-S-o") (lambda () (interactive)(beginning-of-line)(open-line 1)))
 (global-set-key (kbd "C-o") (lambda () (interactive)(end-of-line)(newline)))
+    ;; scroll one line at a time (less "jumpy" than defaults)
+(setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+(setq scroll-step 1) ;; keyboard scroll one line at a time
 #+END_SRC
