@@ -481,11 +481,32 @@ This goes without saying but you can replace bash with your shell of choice.
 #+END_SRC
 
 ** Easy to remember keybinding
+
+
 In loving memory of bspwm, Super + Enter opens a new terminal, old habits die hard.
 #+BEGIN_SRC emacs-lisp
 (global-set-key (kbd "<s-return>") 'ansi-term)
 #+END_SRC
+** tramp config 
+#+BEGIN_SRC emacs-lisp
+(require 'tramp)
+(require 'tramp-sh)
+ (defconst my-tramp-prompt-regexp
+   (concat (regexp-opt '("Passcode or option (1-1):") t)
+           "\\s-*")
+   "Regular expression matching my login prompt question.")
+ 
+ (defun my-tramp-action (proc vec)
+   "Enter a passcode or select one of the following options:"
+   (save-window-excursion
+     (with-current-buffer (tramp-get-connection-buffer vec)
+       (tramp-message vec 6 "\n%s" (buffer-string))
+       (tramp-send-string vec "1"))))
+ 
+ (add-to-list 'tramp-actions-before-shell
+              '(my-tramp-prompt-regexp my-tramp-action))
 
+#+END_SRC
 * Moving around emacs
 One of the most important things about a text editor is how efficient you manage
 to be when using it, how much time do basic tasks take you and so on and so forth.
