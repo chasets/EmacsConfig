@@ -472,6 +472,22 @@ symon can be toggled on and off with =Super + h=.
 * File manager
 Abandoning sunrise-commander.
 The repos are dead and I'm looking for something better anyway.
+** dired-single
+#+BEGIN_SRC 
+;; no extra buffers when entering different dirs
+(use-package dired-single
+  :ensure t
+  :config
+  (add-hook 'dired-mode-hook
+            (lambda ()
+              (define-key dired-mode-map (kbd "RET") 'dired-single-buffer)
+              (define-key dired-mode-map (kbd "<mouse-1>") 'dired-single-buffer-mouse)
+              (define-key dired-mode-map (kbd "^")
+                (lambda ()
+                  (interactive)
+                  (dired-single-buffer ".."))))))
+
+#+END_SRC
 
 * The terminal
 I have used urxvt for years, and I miss it sometimes, but ansi-term is enough for most of my tasks.
