@@ -709,7 +709,7 @@ it's rather similar to ido-vertical though.
   (require 'helm-config)    
   (helm-autoresize-mode 1)
   (define-key helm-find-files-map (kbd "C-b") 'helm-find-files-up-one-level)
-  (define-key helm-find-files-map (kbd "C-f") 'helm-execute-persistent-action)
+(define-key helm-find-files-map (kbd "C-f") 'helm-execute-persistent-action)
 #+END_SRC
 
 ** avy and why it's the best thing in existence
@@ -1196,6 +1196,7 @@ Edit this list as you see fit!
 #+END_SRC
 * Tim specific
 #+BEGIN_SRC emacs-lisp
+(server-start)
 (add-hook 'text-mode-hook #'visual-line-mode)
 ;; vi-like line insertion
 (global-set-key (kbd "C-S-o") (lambda () (interactive)(beginning-of-line)(open-line 1)))
@@ -1203,5 +1204,15 @@ Edit this list as you see fit!
     ;; scroll one line at a time (less "jumpy" than defaults)
  (setq mac-option-modifier 'super)
  (desktop-save-mode 1)
+
+;; I want to hit q to close the help buffer
+(setq help-window-select t)
+;; TSC - make overwrite mode more pleasant when there is no insert key; insert mode by default
+(add-hook 'overwrite-mode-hook
+          (lambda ()
+            (setq cursor-type (if overwrite-mode t 'bar))))
+(overwrite-mode -1)
+(global-set-key (kbd "M-i") (lambda () (interactive) (if overwrite-mode (overwrite-mode -1) (overwrite-mode 1))))
 #+END_SRC
+
 
