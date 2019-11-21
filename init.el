@@ -13,7 +13,7 @@
 	gc-cons-percentage 0.1))
 
 ;; TSC - use symlinks to git files transparently
-(setq vc-follow-symlinks nil)
+(setq vc-follow-symlinks t)
 
 
 (add-hook 'emacs-startup-hook 'startup/revert-file-name-handler-alist)
