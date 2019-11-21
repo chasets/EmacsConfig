@@ -1,6 +1,6 @@
 #+STARTUP: overview
-#+TITLE: Uncle Dave's Emacs
-#+CREATOR: Dawid 'daedreth' Eckert
+#+TITLE: Tim's Emacs
+#+CREATOR: Tim Chase
 #+LANGUAGE: en
 #+OPTIONS: num:nil
 #+ATTR_HTML: :style margin-left: auto; margin-right: auto;
