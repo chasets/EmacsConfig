@@ -213,9 +213,16 @@ We use an actual replacement for it, keep reading or head directly to =dashboard
 *** Disable menus and scrollbars
 If you like using any of those, change =-1= to =1=.
 #+BEGIN_SRC emacs-lisp
-(tool-bar-mode -1)
-(menu-bar-mode -1)
-(scroll-bar-mode -1)
+  (if (display-graphic-p)
+    (progn
+      (tool-bar-mode -1)
+      (menu-bar-mode 1)
+      (scroll-bar-mode 1)
+      (setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
+      (setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
+      (setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
+      (setq scroll-step 1) ;; keyboard scroll one line at a time
+      (setq mac-command-modifier 'meta)))
 #+END_SRC
 *** Disable bell
 This is annoying, remove this line if you like being visually reminded of events.
@@ -1189,18 +1196,11 @@ Edit this list as you see fit!
 #+END_SRC
 * Tim specific
 #+BEGIN_SRC emacs-lisp
-(menu-bar-mode  1)
-(scroll-bar-mode 1)
 (add-hook 'text-mode-hook #'visual-line-mode)
 ;; vi-like line insertion
 (global-set-key (kbd "C-S-o") (lambda () (interactive)(beginning-of-line)(open-line 1)))
 (global-set-key (kbd "C-o") (lambda () (interactive)(end-of-line)(newline)))
     ;; scroll one line at a time (less "jumpy" than defaults)
-(setq mouse-wheel-scroll-amount '(1 ((shift) . 1))) ;; one line at a time
-(setq mouse-wheel-progressive-speed nil) ;; don't accelerate scrolling
-(setq mouse-wheel-follow-mouse 't) ;; scroll window under mouse
-(setq scroll-step 1) ;; keyboard scroll one line at a time
-(setq mac-command-modifier 'meta)
  (setq mac-option-modifier 'super)
  (desktop-save-mode 1)
 #+END_SRC
