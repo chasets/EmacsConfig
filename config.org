@@ -1212,23 +1212,38 @@ Edit this list as you see fit!
 #+END_SRC
 * Tim specific
 #+BEGIN_SRC emacs-lisp
-(server-start)
-(add-hook 'text-mode-hook #'visual-line-mode)
-;; vi-like line insertion
-(global-set-key (kbd "C-S-o") (lambda () (interactive)(beginning-of-line)(open-line 1)))
-(global-set-key (kbd "C-o") (lambda () (interactive)(end-of-line)(newline)))
-    ;; scroll one line at a time (less "jumpy" than defaults)
- (setq mac-option-modifier 'super)
- (desktop-save-mode 1)
+  (server-start)
+  (add-hook 'text-mode-hook #'visual-line-mode)
+  ;; vi-like line insertion
+  (global-set-key (kbd "C-S-o") (lambda () (interactive)(beginning-of-line)(open-line 1)))
+  (global-set-key (kbd "C-o") (lambda () (interactive)(end-of-line)(newline)))
+      ;; scroll one line at a time (less "jumpy" than defaults)
+   (setq mac-option-modifier 'super)
+   (desktop-save-mode 1)
 
-;; I want to hit q to close the help buffer
-(setq help-window-select t)
-;; TSC - make overwrite mode more pleasant when there is no insert key; insert mode by default
-(add-hook 'overwrite-mode-hook
-          (lambda ()
-            (setq cursor-type (if overwrite-mode t 'bar))))
-(overwrite-mode -1)
-(global-set-key (kbd "M-i") (lambda () (interactive) (if overwrite-mode (overwrite-mode -1) (overwrite-mode 1))))
+  ;; I want to hit q to close the help buffer
+  (setq help-window-select t)
+  ;; TSC - make overwrite mode more pleasant when there is no insert key; insert mode by default
+  (add-hook 'overwrite-mode-hook
+            (lambda ()
+              (setq cursor-type (if overwrite-mode t 'bar))))
+  (overwrite-mode -1)
+  (global-set-key (kbd "M-i") (lambda () (interactive) (if overwrite-mode (overwrite-mode -1) (overwrite-mode 1))))
+
+  (use-package dockerfile-mode
+    :ensure t
+    :mode ("Dockerfile\\'" . dockerfile-mode))
+
+  (use-package undo-tree
+    :diminish undo-tree-mode
+    :config
+    (progn
+      (global-undo-tree-mode)
+      (setq undo-tree-visualizer-timestamps t)
+      (setq undo-tree-visualizer-diff t)))
+
+
+
 #+END_SRC
 
 
