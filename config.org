@@ -1269,6 +1269,10 @@ Edit this list as you see fit!
     :ensure t
     :custom (docker-tramp-use-names t))
 
+(global-set-key (kbd "<mouse-3>") 'yank)
+(setq mouse-drag-copy-region t)
+
+
 #+END_SRC
 
 
