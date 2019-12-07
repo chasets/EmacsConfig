@@ -381,8 +381,8 @@ change the numbers to suit your liking, I find 5 to be enough.
     :config
       (dashboard-setup-startup-hook)
       (setq dashboard-startup-banner "~/.emacs.d/img/dashLogo.png")
-      (setq dashboard-items '((recents  . 5)
-                              (projects . 5)))
+      (setq dashboard-items '((recents  . 25)
+                              (projects . 25)))
       (setq dashboard-banner-logo-title ""))
 #+END_SRC
 
@@ -1227,50 +1227,50 @@ Edit this list as you see fit!
 #+END_SRC
 * Tim specific
 #+BEGIN_SRC emacs-lisp
-    (server-start)
-    (add-hook 'text-mode-hook #'visual-line-mode)
-    ;; vi-like line insertion
-    (global-set-key (kbd "C-S-o") (lambda () (interactive)(beginning-of-line)(open-line 1)))
-    (global-set-key (kbd "C-o") (lambda () (interactive)(end-of-line)(newline)))
-        ;; scroll one line at a time (less "jumpy" than defaults)
-     (setq mac-option-modifier 'super)
-     (desktop-save-mode 1)
+      (server-start)
+      (add-hook 'text-mode-hook #'visual-line-mode)
+      ;; vi-like line insertion
+      (global-set-key (kbd "C-S-o") (lambda () (interactive)(beginning-of-line)(open-line 1)))
+      (global-set-key (kbd "C-o") (lambda () (interactive)(end-of-line)(newline)))
+          ;; scroll one line at a time (less "jumpy" than defaults)
+       (setq mac-option-modifier 'super)
+       (desktop-save-mode 1)
 
-    ;; I want to hit q to close the help buffer
-    (setq help-window-select t)
-    ;; TSC - make overwrite mode more pleasant when there is no insert key; insert mode by default
-    (add-hook 'overwrite-mode-hook
-              (lambda ()
-                (setq cursor-type (if overwrite-mode t 'bar))))
-    (overwrite-mode -1)
-    (global-set-key (kbd "M-i") (lambda () (interactive) (if overwrite-mode (overwrite-mode -1) (overwrite-mode 1))))
+      ;; I want to hit q to close the help buffer
+      (setq help-window-select t)
+      ;; TSC - make overwrite mode more pleasant when there is no insert key; insert mode by default
+      (add-hook 'overwrite-mode-hook
+                (lambda ()
+                  (setq cursor-type (if overwrite-mode t 'bar))))
+      (overwrite-mode -1)
+      (global-set-key (kbd "M-i") (lambda () (interactive) (if overwrite-mode (overwrite-mode -1) (overwrite-mode 1))))
 
-    (use-package dockerfile-mode
+      (use-package dockerfile-mode
+        :ensure t
+;;        :custom (setq dockerfile-use-sudo t)
+        :mode ("Dockerfile\\'" . dockerfile-mode))
+
+      ;; (use-package undo-tree
+      ;;   :diminish undo-tree-mode
+      ;;   :config
+      ;;   (progn
+      ;;     (global-undo-tree-mode)
+      ;;     (setq undo-tree-visualizer-timestamps t)
+      ;;     (setq undo-tree-visualizer-diff t)))
+
+      (use-package docker-compose-mode :ensure t)
+
+      (use-package docker
+        :ensure t
+;;        :custom (setq docker-command "sudo docker")
+        :bind ("C-c d" . docker))
+
+    (use-package docker-tramp
       :ensure t
-      :custom (setq dockerfile-use-sudo t)
-      :mode ("Dockerfile\\'" . dockerfile-mode))
+      :custom (docker-tramp-use-names t))
 
-    (use-package undo-tree
-      :diminish undo-tree-mode
-      :config
-      (progn
-        (global-undo-tree-mode)
-        (setq undo-tree-visualizer-timestamps t)
-        (setq undo-tree-visualizer-diff t)))
-
-    (use-package docker-compose-mode :ensure t)
-
-    (use-package docker
-      :ensure t
-      :custom (setq docker-command "sudo docker")
-      :bind ("C-c d" . docker))
-
-  (use-package docker-tramp
-    :ensure t
-    :custom (docker-tramp-use-names t))
-
-(global-set-key (kbd "<mouse-3>") 'yank)
-(setq mouse-drag-copy-region t)
+  (global-set-key (kbd "<mouse-3>") 'yank)
+  (setq mouse-drag-copy-region t)
 
 
 #+END_SRC
