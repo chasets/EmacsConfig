@@ -473,7 +473,7 @@ symon can be toggled on and off with =Super + h=.
 Abandoning sunrise-commander.
 The repos are dead and I'm looking for something better anyway.
 ** dired-x
-#+BEGIN_SRC 
+#+BEGIN_SRC emacs-lisp 
      (add-hook 'dired-load-hook
                (lambda ()
                  (load "dired-x")
@@ -488,7 +488,7 @@ The repos are dead and I'm looking for something better anyway.
                  ))
 #+END_SRC
 ** dired-single
-#+BEGIN_SRC 
+#+BEGIN_SRC emacs-lisp
 ;; no extra buffers when entering different dirs
 (use-package dired-single
   :ensure t
@@ -501,6 +501,33 @@ The repos are dead and I'm looking for something better anyway.
                 (lambda ()
                   (interactive)
                   (dired-single-buffer ".."))))))
+
+      (defun my-dired-init ()
+        "Bunch of stuff to run for dired, either immediately or when it's
+         loaded."
+        ;; <add other stuff here>
+        (define-key dired-mode-map [return] 'dired-single-buffer)
+        (define-key dired-mode-map [mouse-1] 'dired-single-buffer-mouse)
+        (define-key dired-mode-map "^"
+      	(function
+      	 (lambda nil (interactive) (dired-single-buffer "..")))))
+
+      ;; if dired's already loaded, then the keymap will be bound
+      (if (boundp 'dired-mode-map)
+      	;; we're good to go; just add our bindings
+      	(my-dired-init)
+        ;; it's not loaded yet, so add our bindings to the load-hook
+        (add-hook 'dired-load-hook 'my-dired-init))
+
+      (global-set-key [(f5)] 'dired-single-magic-buffer)
+      (global-set-key [(control f5)] (function
+      	(lambda nil (interactive)
+              (dired-single-magic-buffer default-directory))))
+      (global-set-key [(shift f5)] (function
+	        (lambda nil (interactive)
+              (message "Current directory is: %s" default-directory))))
+      (global-set-key [(meta f5)] 'dired-single-toggle-buffer-name)
+
 
 #+END_SRC
 
@@ -1225,6 +1252,238 @@ Edit this list as you see fit!
     (diminish 'flycheck-mode)
     (diminish 'helm-mode))
 #+END_SRC
+* Clojure
+#+BEGIN_SRC emacs-lisp 
+;; https://github.com/howardabrams/dot-files/blob/master/emacs-clojure.org
+
+(use-package clojure-snippets
+  :ensure t)
+
+(use-package clojure-mode
+  :ensure t
+  :init
+  (defconst clojure--prettify-symbols-alist
+    '(("fn"   . ?λ)
+      ("__"   . ?⁈)))
+
+  :config
+  (add-hook 'clojure-mode-hook 'global-prettify-symbols-mode)
+  :bind (("C-c d f" . cider-code)
+         ("C-c d g" . cider-grimoire)
+         ("C-c d w" . cider-grimoire-web)
+         ("C-c d c" . clojure-cheatsheet)
+         ("C-c d d" . dash-at-point)))
+
+ (use-package color-identifiers-mode
+  :ensure t
+  :init
+  (add-hook 'clojure-mode-hook 'color-identifiers-mode))
+
+ (use-package clojure-mode
+  :config
+  (define-clojure-indent
+    (defroutes 'defun)
+    (GET 2)
+    (POST 2)
+    (PUT 2)
+    (DELETE 2)
+    (HEAD 2)
+    (ANY 2)
+    (context 2)))
+
+  (defun paredit-delete-indentation (&optional arg)
+  "Handle joining lines that end in a comment."
+  (interactive "*P")
+  (let (comt)
+    (save-excursion
+      (move-beginning-of-line (if arg 1 0))
+      (when (skip-syntax-forward "^<" (point-at-eol))
+        (setq comt (delete-and-extract-region (point) (point-at-eol)))))
+    (delete-indentation arg)
+    (when comt
+      (save-excursion
+        (move-end-of-line 1)
+        (insert " ")
+        (insert comt)))))
+
+  (defun paredit-remove-newlines ()
+  "Removes extras whitespace and newlines from the current point
+to the next parenthesis."
+  (interactive)
+  (let ((up-to (point))
+        (from (re-search-forward "[])}]")))
+     (backward-char)
+     (while (> (point) up-to)
+       (paredit-delete-indentation))))
+
+  (use-package paredit
+  :bind ("M-^" . paredit-delete-indentation)
+  :bind ("C-^" . paredit-remove-newlines)
+  :init
+  (add-hook 'clojure-mode-hook 'paredit-mode))
+
+ (defun cider-send-and-evaluate-sexp ()
+  "Sends the s-expression located before the point or the active
+  region to the REPL and evaluates it. Then the Clojure buffer is
+  activated as if nothing happened."
+  (interactive)
+  (if (not (region-active-p))
+      (cider-insert-last-sexp-in-repl)
+    (cider-insert-in-repl
+     (buffer-substring (region-beginning) (region-end)) nil))
+  (cider-switch-to-repl-buffer)
+  (cider-repl-closing-return)
+  (cider-switch-to-last-clojure-buffer)
+  (message ""))
+
+ (use-package cider
+  :ensure t
+  :commands (cider cider-connect cider-jack-in)
+
+  :init
+  (setq cider-auto-select-error-buffer t
+        cider-repl-pop-to-buffer-on-connect nil
+        cider-repl-use-clojure-font-lock t
+        cider-repl-wrap-history t
+        cider-repl-history-size 1000
+        cider-show-error-buffer t
+        nrepl-hide-special-buffers t
+        ;; Stop error buffer from popping up while working in buffers other than the REPL:
+        nrepl-popup-stacktraces nil)
+
+  ;; (add-hook 'cider-mode-hook 'cider-turn-on-eldoc-mode)
+  (add-hook 'cider-mode-hook 'company-mode)
+
+  (add-hook 'cider-repl-mode-hook 'paredit-mode)
+  (add-hook 'cider-repl-mode-hook 'superword-mode)
+  (add-hook 'cider-repl-mode-hook 'company-mode)
+  (add-hook 'cider-test-report-mode 'jcf-soft-wrap)
+
+  :bind (:map cider-mode-map
+         ("C-c C-v C-c" . cider-send-and-evaluate-sexp)
+         ("C-c C-p"     . cider-eval-print-last-sexp))
+
+  :config
+  ;; (use-package slamhound)
+  )
+
+ (defun ha/cider-append-comment ()
+  (when (null (nth 8 (syntax-ppss)))
+    (insert " ; ")))
+
+  (advice-add 'cider-eval-print-last-sexp :before #'ha/cider-append-comment)
+
+  (use-package ob-clojure
+  :init
+  (setq org-babel-clojure-backend 'cider))
+
+  (use-package flycheck-clojure
+  :ensure t
+  :init
+  (add-hook 'after-init-hook 'global-flycheck-mode)
+  :config
+  (use-package flycheck
+    :config
+    (flycheck-clojure-setup)))
+
+  (use-package flycheck-pos-tip
+  :ensure t
+  :config
+  (use-package flycheck
+    :config
+    (setq flycheck-display-errors-function 'flycheck-pos-tip-error-messages)))
+
+  (use-package clj-refactor
+  :ensure t
+  :init
+  (add-hook 'clojure-mode-hook 'clj-refactor-mode)
+  :config
+  ;; Configure the Clojure Refactoring prefix:
+  (cljr-add-keybindings-with-prefix "C-c .")
+  :diminish clj-refactor-mode)
+
+;; from https://github.com/flyingmachine/emacs-for-clojure/blob/master/customizations/setup-clojure.el
+;; Enable paredit for Clojure
+(add-hook 'clojure-mode-hook 'enable-paredit-mode)
+
+;; This is useful for working with camel-case tokens, like names of
+;; Java classes (e.g. JavaClassName)
+(add-hook 'clojure-mode-hook 'subword-mode)
+
+;; A little more syntax highlighting
+(require 'clojure-mode-extra-font-locking)
+
+;; syntax hilighting for midje
+(add-hook 'clojure-mode-hook
+          (lambda ()
+            (setq inferior-lisp-program "lein repl")
+            (font-lock-add-keywords
+             nil
+             '(("(\\(facts?\\)"
+                (1 font-lock-keyword-face))
+               ("(\\(background?\\)"
+                (1 font-lock-keyword-face))))
+            (define-clojure-indent (fact 1))
+            (define-clojure-indent (facts 1))
+            (rainbow-delimiters-mode)))
+
+;;;;
+;; Cider
+;;;;
+
+;; provides minibuffer documentation for the code you're typing into the repl
+(add-hook 'cider-mode-hook 'eldoc-mode)
+
+;; go right to the REPL buffer when it's finished connecting
+(setq cider-repl-pop-to-buffer-on-connect t)
+
+;; When there's a cider error, show its buffer and switch to it
+(setq cider-show-error-buffer t)
+(setq cider-auto-select-error-buffer t)
+
+;; Where to store the cider history.
+(setq cider-repl-history-file "~/.emacs.d/cider-history")
+
+;; Wrap when navigating history.
+(setq cider-repl-wrap-history t)
+
+;; enable paredit in your REPL
+(add-hook 'cider-repl-mode-hook 'paredit-mode)
+
+;; Use clojure mode for other extensions
+(add-to-list 'auto-mode-alist '("\\.edn$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.boot$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("\\.cljs.*$" . clojure-mode))
+(add-to-list 'auto-mode-alist '("lein-env" . enh-ruby-mode))
+
+
+;; key bindings
+;; these help me out with the way I usually develop web apps
+(defun cider-start-http-server ()
+  (interactive)
+  (cider-load-current-buffer)
+  (let ((ns (cider-current-ns)))
+    (cider-repl-set-ns ns)
+    (cider-interactive-eval (format "(println '(def server (%s/start))) (println 'server)" ns))
+    (cider-interactive-eval (format "(def server (%s/start)) (println server)" ns))))
+
+
+(defun cider-refresh ()
+  (interactive)
+  (cider-interactive-eval (format "(user/reset)")))
+
+(defun cider-user-ns ()
+  (interactive)
+  (cider-repl-set-ns "user"))
+
+(eval-after-load 'cider
+  '(progn
+     (define-key clojure-mode-map (kbd "C-c C-v") 'cider-start-http-server)
+     (define-key clojure-mode-map (kbd "C-M-r") 'cider-refresh)
+     (define-key clojure-mode-map (kbd "C-c u") 'cider-user-ns)
+     (define-key cider-mode-map (kbd "C-c u") 'cider-user-ns)))  
+
+#+END_SRC
 * Tim specific
 #+BEGIN_SRC emacs-lisp
       (server-start)
@@ -1272,6 +1531,7 @@ Edit this list as you see fit!
   (global-set-key (kbd "<mouse-3>") 'yank)
   (setq mouse-drag-copy-region t)
 
+  
 
 #+END_SRC
 
