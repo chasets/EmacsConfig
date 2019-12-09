@@ -1011,6 +1011,7 @@ I prefer =C-n= and =C-p= to move around the items, so I remap those accordingly.
   (use-package company
     :ensure t
     :config
+    (setq company-global-modes '(not shell-mode ))
     (setq company-idle-delay 0)
     (setq company-minimum-prefix-length 3))
 
