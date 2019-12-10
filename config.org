@@ -1412,9 +1412,10 @@ to the next parenthesis."
 (add-hook 'clojure-mode-hook 'subword-mode)
 
 ;; A little more syntax highlighting
+(use-package clojure-mode-extra-font-locking :ensure t)
 (require 'clojure-mode-extra-font-locking)
 
-;; syntax hilighting for midje
+;; Syntax hilighting for midje
 (add-hook 'clojure-mode-hook
           (lambda ()
             (setq inferior-lisp-program "lein repl")
